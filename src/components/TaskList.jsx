@@ -1,0 +1,31 @@
+import React from 'react';
+import TaskItem from './TaskItem';
+import { motion, AnimatePresence } from 'framer-motion';
+
+function TaskList({ tasks, onEdit, onDelete, onStatusChange }) {
+  return (
+    <div className="p-4">
+      {tasks.length === 0 ? (
+        <p className="text-center py-8 text-gray-500">No tasks yet. Add a new task!</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <AnimatePresence>
+            {tasks.map((task) => (
+              <motion.div
+                key={task.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <TaskItem task={task} onEdit={onEdit} onDelete={onDelete} onStatusChange={onStatusChange} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default TaskList;
