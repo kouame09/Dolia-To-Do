@@ -6,7 +6,7 @@ function TaskList({ tasks, onEdit, onDelete, onStatusChange }) {
   return (
     <div className="p-4">
       {tasks.length === 0 ? (
-        <p className="text-center py-8 text-gray-500">No tasks yet. Add a new task!</p>
+        <p className="text-center py-8 text-gray-500">Il n'y a pas encore de tâches. Ajoutez une nouvelle tâche !</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <AnimatePresence>
