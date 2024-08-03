@@ -1,7 +1,7 @@
 import React from 'react';
-import { PencilIcon, TrashIcon, CalendarIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon, CalendarIcon, FolderIcon } from '@heroicons/react/24/solid';
 
-function TaskItem({ task, onEdit, onDelete, onSubTaskChange }) {
+function TaskItem({ task, onEdit, onDelete, onSubTaskChange, folders }) {
   const statusColors = {
     todo: 'bg-red-100 text-red-800',
     'in-progress': 'bg-yellow-100 text-yellow-800',
@@ -15,6 +15,7 @@ function TaskItem({ task, onEdit, onDelete, onSubTaskChange }) {
   };
 
   const progress = calculateProgress();
+  const folder = folders.find(f => f.id === task.folderId);
 
   return (
     <div className="bg-white rounded-lg shadow-md mb-4 overflow-hidden">
@@ -49,7 +50,12 @@ function TaskItem({ task, onEdit, onDelete, onSubTaskChange }) {
             <span>{new Date(task.date).toLocaleDateString()}</span>
           </div>
         )}
-        {/* Barre de progression */}
+        {folder && (
+          <div className="flex items-center text-gray-500 mb-3">
+            <FolderIcon className="h-4 w-4 mr-2" />
+            <span>{folder.name}</span>
+          </div>
+        )}
         <div className="mt-3">
           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
             <div 

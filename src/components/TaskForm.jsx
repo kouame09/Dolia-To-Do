@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { XMarkIcon, PlusCircleIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function TaskForm({ onSubmit, onClose, initialData }) {
+function TaskForm({ onSubmit, onClose, initialData, folders }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [subTasks, setSubTasks] = useState([]);
   const [newSubTask, setNewSubTask] = useState('');
+  const [selectedFolder, setSelectedFolder] = useState(initialData?.folderId || '');
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -16,16 +17,18 @@ function TaskForm({ onSubmit, onClose, initialData }) {
       setDescription(initialData.description);
       setDate(initialData.date || '');
       setSubTasks(initialData.subTasks || []);
+      setSelectedFolder(initialData.folderId || '');
     }
   }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ title, description, date, subTasks });
+    onSubmit({ title, description, date, subTasks, folderId: selectedFolder });
     setTitle('');
     setDescription('');
     setDate('');
     setSubTasks([]);
+    setSelectedFolder('');
   };
 
   const addSubTask = () => {
@@ -41,7 +44,6 @@ function TaskForm({ onSubmit, onClose, initialData }) {
     }
   };
 
-  // Fonction pour obtenir la date minimale (aujourd'hui)
   const getMinDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -110,9 +112,28 @@ function TaskForm({ onSubmit, onClose, initialData }) {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                min={getMinDate()} // Ajout de la date minimale
+                min={getMinDate()}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="folder" className="block text-sm font-medium text-gray-700 mb-1">
+                Dossier
+              </label>
+              <div className="relative">
+                <select
+                  id="folder"
+                  value={selectedFolder}
+                  onChange={(e) => setSelectedFolder(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none"
+                >
+                  <option value="">Aucun dossier</option>
+                  {folders.map(folder => (
+                    <option key={folder.id} value={folder.id}>{folder.name}</option>
+                  ))}
+                </select>
+                <FolderIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+              </div>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">

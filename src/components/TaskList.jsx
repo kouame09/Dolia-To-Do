@@ -2,7 +2,7 @@ import React from 'react';
 import TaskItem from './TaskItem';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function TaskList({ tasks, onEdit, onDelete, onSubTaskChange }) {
+function TaskList({ tasks, folders, onEditTask, onDeleteTask, onSubTaskChange }) {
   return (
     <div className="p-4">
       {tasks.length === 0 ? (
@@ -20,9 +20,10 @@ function TaskList({ tasks, onEdit, onDelete, onSubTaskChange }) {
               >
                 <TaskItem 
                   task={task} 
-                  onEdit={onEdit} 
-                  onDelete={onDelete} 
-                  onSubTaskChange={onSubTaskChange} 
+                  onEdit={onEditTask} 
+                  onDelete={onDeleteTask} 
+                  onSubTaskChange={onSubTaskChange}
+                  folders={folders}
                 />
               </motion.div>
             ))}

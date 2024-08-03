@@ -2,24 +2,30 @@ import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import AddButton from './components/AddButton';
 import TaskForm from './components/TaskForm';
+import FolderForm from './components/FolderForm';
+import Folder from './components/Folder';
 import HamburgerMenu from './components/HamburgerMenu';
 import Loader from './components/Loader';
 import useLocalStorage from './hooks/useLocalStorage';
 import { AnimatePresence } from 'framer-motion';
+import FolderOptionsModal from './components/FolderOptionsModal'; // Assurez-vous d'importer le nouveau modal
 
 function App() {
+  const [folders, setFolders] = useLocalStorage('folders', []);
   const [tasks, setTasks] = useLocalStorage('tasks', []);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  const [isFolderFormOpen, setIsFolderFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [editingFolder, setEditingFolder] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFolderOptionsOpen, setIsFolderOptionsOpen] = useState(false); // Pour le modal des options de dossier
+  const [selectedFolder, setSelectedFolder] = useState(null); // Pour garder la trace du dossier sélectionné
 
   useEffect(() => {
-    // Simuler un chargement
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // Affiche le loader pendant 2 secondes
+    }, 2000);
   }, []);
 
   const addTask = (task) => {
@@ -34,19 +40,37 @@ function App() {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  const handleFormSubmit = (task) => {
+  const addFolder = (folder) => {
+    setFolders([...folders, { id: Date.now(), ...folder }]);
+  };
+
+  const updateFolder = (id, updatedFolder) => {
+    setFolders(folders.map(folder => folder.id === id ? { ...folder, ...updatedFolder } : folder));
+  };
+
+  const deleteFolder = (id) => {
+    setFolders(folders.filter(folder => folder.id !== id));
+    setTasks(tasks.map(task => task.folderId === id ? { ...task, folderId: null } : task));
+  };
+
+  const handleTaskFormSubmit = (task) => {
     if (editingTask) {
       updateTask(editingTask.id, task);
       setEditingTask(null);
     } else {
       addTask(task);
     }
-    setIsFormOpen(false);
+    setIsTaskFormOpen(false);
   };
 
-  const handleFormClose = () => {
-    setIsFormOpen(false);
-    setEditingTask(null);
+  const handleFolderFormSubmit = (folder) => {
+    if (editingFolder) {
+      updateFolder(editingFolder.id, folder);
+      setEditingFolder(null);
+    } else {
+      addFolder(folder);
+    }
+    setIsFolderFormOpen(false);
   };
 
   const handleSubTaskChange = (taskId, subTaskId) => {
@@ -76,6 +100,11 @@ function App() {
     return task.status === filter;
   });
 
+  const openFolderOptions = (folder) => {
+    setSelectedFolder(folder);
+    setIsFolderOptionsOpen(true);
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -83,33 +112,89 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <HamburgerMenu
-        isOpen={isMenuOpen}
-        toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
+        isOpen={false}
+        toggleMenu={() => {}}
         setFilter={setFilter}
         currentFilter={filter}
       />
-      <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
+      <div className={`p-4`}>
         <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia app</h1>
+        
+        {/* Folder management */}
+        <div className="mb-4 flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Dossiers</h2>
+          <button
+            onClick={() => setIsFolderFormOpen(true)}
+            className="bg-emerald-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-emerald-600 transition-colors"
+          >
+            Ajouter un dossier
+          </button>
+        </div>
+        <div className="overflow-x-auto pb-4">
+          <div className="flex space-x-4 min-w-max">
+            {folders.map(folder => (
+              <Folder
+                key={folder.id}
+                folder={folder}
+                onEditFolder={() => {
+                  setEditingFolder(folder);
+                  setIsFolderFormOpen(true);
+                }}
+                onDeleteFolder={deleteFolder}
+                onOpenOptions={() => openFolderOptions(folder)} // Ouvrir les options du dossier
+              />
+            ))}
+          </div>
+        </div>
+        
         <TaskList 
           tasks={filteredTasks}
-          onEdit={setEditingTask}
-          onDelete={deleteTask}
-          onSubTaskChange={handleSubTaskChange} // Pass the handleSubTaskChange function
+          folders={folders}
+          onEditTask={setEditingTask}
+          onDeleteTask={deleteTask}
+          onSubTaskChange={handleSubTaskChange}
         />
       </div>
       
-      <AddButton onClick={() => setIsFormOpen(true)} />
+      <AddButton onClick={() => setIsTaskFormOpen(true)} />
       
       <AnimatePresence>
-        {(isFormOpen || editingTask) && (
+        {(isTaskFormOpen || editingTask) && (
           <TaskForm
             key="task-form"
-            onSubmit={handleFormSubmit}
-            onClose={handleFormClose}
+            onSubmit={handleTaskFormSubmit}
+            onClose={() => {
+              setIsTaskFormOpen(false);
+              setEditingTask(null);
+            }}
             initialData={editingTask}
+            folders={folders}
           />
         )}
       </AnimatePresence>
+      
+      <AnimatePresence>
+        {(isFolderFormOpen || editingFolder) && (
+          <FolderForm
+            key="folder-form"
+            onSubmit={handleFolderFormSubmit}
+            onClose={() => {
+              setIsFolderFormOpen(false);
+              setEditingFolder(null);
+            }}
+            initialData={editingFolder}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Modal pour les options de dossier */}
+      <FolderOptionsModal
+        isOpen={isFolderOptionsOpen}
+        onClose={() => setIsFolderOptionsOpen(false)}
+        folder={selectedFolder}
+        onEditFolder={handleFolderFormSubmit}
+        onDeleteFolder={deleteFolder}
+      />
     </div>
   );
 }
