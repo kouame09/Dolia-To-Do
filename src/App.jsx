@@ -8,7 +8,7 @@ import HamburgerMenu from './components/HamburgerMenu';
 import Loader from './components/Loader';
 import useLocalStorage from './hooks/useLocalStorage';
 import { AnimatePresence } from 'framer-motion';
-import FolderOptionsModal from './components/FolderOptionsModal'; // Assurez-vous d'importer le nouveau modal
+import FolderOptionsModal from './components/FolderOptionsModal';
 
 function App() {
   const [folders, setFolders] = useLocalStorage('folders', []);
@@ -19,8 +19,9 @@ function App() {
   const [editingFolder, setEditingFolder] = useState(null);
   const [filter, setFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [isFolderOptionsOpen, setIsFolderOptionsOpen] = useState(false); // Pour le modal des options de dossier
-  const [selectedFolder, setSelectedFolder] = useState(null); // Pour garder la trace du dossier sélectionné
+  const [isFolderOptionsOpen, setIsFolderOptionsOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Pour le menu hamburger
 
   useEffect(() => {
     setTimeout(() => {
@@ -112,12 +113,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <HamburgerMenu
-        isOpen={false}
-        toggleMenu={() => {}}
+        isOpen={isMenuOpen}
+        toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
         setFilter={setFilter}
         currentFilter={filter}
       />
-      <div className={`p-4`}>
+      <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
         <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia app</h1>
         
         {/* Folder management */}
