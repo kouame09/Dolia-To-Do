@@ -41,6 +41,15 @@ function TaskForm({ onSubmit, onClose, initialData }) {
     }
   };
 
+  // Fonction pour obtenir la date minimale (aujourd'hui)
+  const getMinDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -61,7 +70,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white">
-            <h2 className="text-xl font-semibold">{initialData ? 'Modifier la tâche' : 'Nouvelle tâche'}</h2>
+            <h2 className="text-xl font-semibold">{initialData ? 'Modifier la tâche' : 'Ajouter une nouvelle tâche'}</h2>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -101,6 +110,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                min={getMinDate()} // Ajout de la date minimale
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -148,7 +158,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
               type="submit"
               className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-colors"
             >
-              {initialData ? 'Modifier la tâche' : 'Ajouter la tâche'}
+              {initialData ? 'Modifier la tâche' : 'Ajouter une tâche'}
             </button>
           </form>
         </motion.div>

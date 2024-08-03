@@ -49,6 +49,28 @@ function App() {
     setEditingTask(null);
   };
 
+  const handleSubTaskChange = (taskId, subTaskId) => {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === taskId) {
+        const updatedSubTasks = task.subTasks.map(st => 
+          st.id === subTaskId ? { ...st, completed: !st.completed } : st
+        );
+        const completedSubTasks = updatedSubTasks.filter(st => st.completed).length;
+        let newStatus;
+        if (completedSubTasks === 0) {
+          newStatus = 'todo';
+        } else if (completedSubTasks === updatedSubTasks.length) {
+          newStatus = 'done';
+        } else {
+          newStatus = 'in-progress';
+        }
+        return { ...task, subTasks: updatedSubTasks, status: newStatus };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  };
+
   const filteredTasks = tasks.filter(task => {
     if (filter === 'all') return true;
     return task.status === filter;
@@ -67,12 +89,12 @@ function App() {
         currentFilter={filter}
       />
       <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
-        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia</h1> {/* Ajout de rounded-lg */}
+        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia app</h1>
         <TaskList 
           tasks={filteredTasks}
           onEdit={setEditingTask}
           onDelete={deleteTask}
-          onStatusChange={(id, status) => updateTask(id, { status })}
+          onSubTaskChange={handleSubTaskChange} // Pass the handleSubTaskChange function
         />
       </div>
       
