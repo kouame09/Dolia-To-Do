@@ -48,7 +48,7 @@ const HamburgerMenu = ({ isOpen, toggleMenu, setFilter, currentFilter }) => {
                     className={`w-full text-left py-3 px-4 rounded-lg transition-colors flex items-center space-x-3
                       ${currentFilter === filter.id 
                         ? 'bg-emerald-500 text-white' 
-                        : 'text-gray-700 hover:bg-blue-100'}`}
+                        : 'text-gray-700 hover:bg-emerald-100'}`}
                   >
                     <filter.icon className="w-5 h-5" />
                     <span>{filter.name}</span>

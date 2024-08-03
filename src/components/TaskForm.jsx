@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -8,6 +8,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
   const [date, setDate] = useState('');
   const [subTasks, setSubTasks] = useState([]);
   const [newSubTask, setNewSubTask] = useState('');
+  const formRef = useRef(null);
 
   useEffect(() => {
     if (initialData) {
@@ -34,6 +35,12 @@ function TaskForm({ onSubmit, onClose, initialData }) {
     }
   };
 
+  const handleOutsideClick = (e) => {
+    if (formRef.current && !formRef.current.contains(e.target)) {
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -41,17 +48,20 @@ function TaskForm({ onSubmit, onClose, initialData }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[100]"
+        onClick={handleOutsideClick}
       >
         <motion.div
+          ref={formRef}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-lg w-full max-w-md"
+          className="bg-white rounded-lg w-full max-w-md overflow-y-auto max-h-[90vh]"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center p-4 border-b">
-            <h2 className="text-xl font-semibold">{initialData ? 'Modifier la tâche' : 'Ajouter une nouvelle tâche'}</h2>
+          <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white">
+            <h2 className="text-xl font-semibold">{initialData ? 'Modifier la tâche' : 'Nouvelle tâche'}</h2>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -96,7 +106,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sous-tâches
+                Sous-tâches
               </label>
               <div className="flex items-center mb-2">
                 <input
@@ -138,7 +148,7 @@ function TaskForm({ onSubmit, onClose, initialData }) {
               type="submit"
               className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-colors"
             >
-              {initialData ? 'Modifier la tâche' : 'Ajouter une tâche'}
+              {initialData ? 'Modifier la tâche' : 'Ajouter la tâche'}
             </button>
           </form>
         </motion.div>

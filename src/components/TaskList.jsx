@@ -2,7 +2,7 @@ import React from 'react';
 import TaskItem from './TaskItem';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function TaskList({ tasks, onEdit, onDelete, onStatusChange }) {
+function TaskList({ tasks, onEdit, onDelete, onSubTaskChange }) {
   return (
     <div className="p-4">
       {tasks.length === 0 ? (
@@ -18,7 +18,12 @@ function TaskList({ tasks, onEdit, onDelete, onStatusChange }) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                <TaskItem task={task} onEdit={onEdit} onDelete={onDelete} onStatusChange={onStatusChange} />
+                <TaskItem 
+                  task={task} 
+                  onEdit={onEdit} 
+                  onDelete={onDelete} 
+                  onSubTaskChange={onSubTaskChange} 
+                />
               </motion.div>
             ))}
           </AnimatePresence>

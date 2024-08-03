@@ -67,7 +67,7 @@ function App() {
         currentFilter={filter}
       />
       <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
-        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-t-lg">Dolia app</h1>
+        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia</h1> {/* Ajout de rounded-lg */}
         <TaskList 
           tasks={filteredTasks}
           onEdit={setEditingTask}
