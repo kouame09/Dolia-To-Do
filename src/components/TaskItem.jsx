@@ -29,7 +29,7 @@ function TaskItem({ task, onEdit, onDelete, onSubTaskChange, folders }) {
             </span>
             <button
               onClick={() => onEdit(task)}
-              className="text-emerald-500 hover:text-emerald-600 transition-colors p-1 rounded-full hover:bg-blue-100"
+              className="text-emerald-500 hover:text-emerald-600 transition-colors p-1 rounded-full hover:bg-emerald-100"
             >
               <PencilIcon className="h-5 w-5" />
             </button>

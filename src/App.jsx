@@ -21,7 +21,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFolderOptionsOpen, setIsFolderOptionsOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Pour le menu hamburger
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -29,12 +29,30 @@ function App() {
     }, 2000);
   }, []);
 
+  useEffect(() => {
+    console.log("Tâches:", tasks);
+    console.log("Dossiers:", folders);
+  }, [tasks, folders]);
+
   const addTask = (task) => {
-    setTasks([...tasks, { id: Date.now(), ...task, status: 'todo' }]);
+    const newTask = {
+      id: Date.now(),
+      ...task,
+      status: 'todo',
+      folderId: task.folderId || (selectedFolder ? selectedFolder.id : null)
+    };
+    console.log("Nouvelle tâche ajoutée:", newTask);
+    setTasks([...tasks, newTask]);
   };
 
   const updateTask = (id, updatedTask) => {
-    setTasks(tasks.map(task => task.id === id ? { ...task, ...updatedTask } : task));
+    const updatedTasks = tasks.map(task => 
+      task.id === id 
+        ? { ...task, ...updatedTask, folderId: updatedTask.folderId || task.folderId } 
+        : task
+    );
+    console.log("Tâche mise à jour:", updatedTasks.find(t => t.id === id));
+    setTasks(updatedTasks);
   };
 
   const deleteTask = (id) => {
@@ -52,6 +70,9 @@ function App() {
   const deleteFolder = (id) => {
     setFolders(folders.filter(folder => folder.id !== id));
     setTasks(tasks.map(task => task.folderId === id ? { ...task, folderId: null } : task));
+    if (selectedFolder && selectedFolder.id === id) {
+      setSelectedFolder(null);
+    }
   };
 
   const handleTaskFormSubmit = (task) => {
@@ -97,6 +118,12 @@ function App() {
   };
 
   const filteredTasks = tasks.filter(task => {
+    console.log('Filtrage - Task:', task.title, 'FolderId:', task.folderId, 'Selected Folder:', selectedFolder?.id);
+    if (selectedFolder) {
+      const isInFolder = task.folderId === selectedFolder.id;
+      console.log(`La tâche "${task.title}" est${isInFolder ? '' : ' non'} dans le dossier sélectionné`);
+      return isInFolder;
+    }
     if (filter === 'all') return true;
     return task.status === filter;
   });
@@ -104,6 +131,12 @@ function App() {
   const openFolderOptions = (folder) => {
     setSelectedFolder(folder);
     setIsFolderOptionsOpen(true);
+  };
+
+  const handleFolderSelect = (folder) => {
+    const newSelectedFolder = folder.id === selectedFolder?.id ? null : folder;
+    console.log("Dossier sélectionné:", newSelectedFolder);
+    setSelectedFolder(newSelectedFolder);
   };
 
   if (isLoading) {
@@ -142,11 +175,25 @@ function App() {
                   setIsFolderFormOpen(true);
                 }}
                 onDeleteFolder={deleteFolder}
-                onOpenOptions={() => openFolderOptions(folder)} // Ouvrir les options du dossier
+                onSelectFolder={handleFolderSelect}
+                isSelected={selectedFolder?.id === folder.id}
+                onOpenOptions={() => openFolderOptions(folder)}
               />
             ))}
           </div>
         </div>
+        
+        {selectedFolder && (
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Tâches dans {selectedFolder.name}</h3>
+            <button
+              onClick={() => setSelectedFolder(null)}
+              className="mt-2 text-sm text-emerald-600 hover:text-emerald-800"
+            >
+              Voir toutes les tâches
+            </button>
+          </div>
+        )}
         
         <TaskList 
           tasks={filteredTasks}
@@ -154,6 +201,7 @@ function App() {
           onEditTask={setEditingTask}
           onDeleteTask={deleteTask}
           onSubTaskChange={handleSubTaskChange}
+          selectedFolder={selectedFolder}
         />
       </div>
       

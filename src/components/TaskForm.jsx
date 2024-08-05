@@ -23,12 +23,15 @@ function TaskForm({ onSubmit, onClose, initialData, folders }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ title, description, date, subTasks, folderId: selectedFolder });
+    const taskData = { title, description, date, subTasks, folderId: selectedFolder };
+    console.log("Données de la tâche soumises:", taskData);
+    onSubmit(taskData);
     setTitle('');
     setDescription('');
     setDate('');
     setSubTasks([]);
     setSelectedFolder('');
+    onClose();
   };
 
   const addSubTask = () => {

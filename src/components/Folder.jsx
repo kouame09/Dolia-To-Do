@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FolderIcon, EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import FolderOptionsModal from './FolderOptionsModal';
 
-function Folder({ folder, onEditFolder, onDeleteFolder }) {
+function Folder({ folder, onEditFolder, onDeleteFolder, onSelectFolder, isSelected }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = (e) => {
@@ -10,10 +10,17 @@ function Folder({ folder, onEditFolder, onDeleteFolder }) {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleFolderClick = () => {
+    onSelectFolder(folder);
+  };
+
   return (
-    <div className="relative bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0 w-24">
+    <div 
+      className={`relative bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0 w-24 cursor-pointer ${isSelected ? 'ring-2 ring-emerald-500' : ''}`}
+      onClick={handleFolderClick}
+    >
       <div className="flex flex-col items-center">
-        <FolderIcon className="h-10 w-10 text-emerald-500 mb-1" />
+        <FolderIcon className={`h-10 w-10 mb-1 ${isSelected ? 'text-emerald-600' : 'text-emerald-500'}`} />
         <span className="text-xs font-medium text-gray-700 text-center truncate w-full">{folder.name}</span>
       </div>
       <button
