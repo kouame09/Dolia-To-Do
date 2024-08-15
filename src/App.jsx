@@ -152,7 +152,7 @@ function App() {
         currentFilter={filter}
       />
       <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
-        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia</h1>
+        <h1 className="text-3xl font-bold text-center py-6 bg-white text-emerald-500 rounded-lg">Dolia</h1>
         
         {/* Folder management */}
         <div className="mb-4 flex justify-between items-center">
