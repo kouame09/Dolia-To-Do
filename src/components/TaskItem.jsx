@@ -1,7 +1,7 @@
 import React from 'react';
-import { PencilIcon, TrashIcon, CalendarIcon, FolderIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, TrashIcon, CalendarIcon } from '@heroicons/react/24/solid';
 
-function TaskItem({ task, onEdit, onDelete, onSubTaskChange, folders }) {
+function TaskItem({ task, onEdit, onDelete, onSubTaskChange }) {
   const statusColors = {
     todo: 'bg-red-100 text-red-800',
     'in-progress': 'bg-yellow-100 text-yellow-800',
@@ -15,7 +15,6 @@ function TaskItem({ task, onEdit, onDelete, onSubTaskChange, folders }) {
   };
 
   const progress = calculateProgress();
-  const folder = folders.find(f => f.id === task.folderId);
 
   return (
     <div className="bg-white rounded-lg shadow-md mb-4 overflow-hidden">
@@ -48,12 +47,6 @@ function TaskItem({ task, onEdit, onDelete, onSubTaskChange, folders }) {
           <div className="flex items-center text-gray-500 mb-3">
             <CalendarIcon className="h-4 w-4 mr-2" />
             <span>{new Date(task.date).toLocaleDateString()}</span>
-          </div>
-        )}
-        {folder && (
-          <div className="flex items-center text-gray-500 mb-3">
-            <FolderIcon className="h-4 w-4 mr-2" />
-            <span>{folder.name}</span>
           </div>
         )}
         <div className="mt-3">

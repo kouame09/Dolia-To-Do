@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 function Loader() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#1a725b] z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#1a725b] z-999">
       <motion.img
         src="/icon.svg"
         alt="Loading"

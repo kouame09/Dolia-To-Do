@@ -11,7 +11,7 @@ function Folder({ folder, onEditFolder, onDeleteFolder, onSelectFolder, isSelect
   };
 
   const handleFolderClick = () => {
-    onSelectFolder(folder);
+    onSelectFolder(folder); // Appelle la fonction pour sélectionner le dossier
   };
 
   return (

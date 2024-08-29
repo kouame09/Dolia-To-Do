@@ -9,6 +9,7 @@ import Loader from './components/Loader';
 import useLocalStorage from './hooks/useLocalStorage';
 import { AnimatePresence } from 'framer-motion';
 import FolderOptionsModal from './components/FolderOptionsModal';
+import TabMenu from './components/TabMenu';
 
 function App() {
   const [folders, setFolders] = useLocalStorage('folders', []);
@@ -22,17 +23,24 @@ function App() {
   const [isFolderOptionsOpen, setIsFolderOptionsOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
   }, []);
-
-  useEffect(() => {
-    console.log("Tâches:", tasks);
-    console.log("Dossiers:", folders);
-  }, [tasks, folders]);
 
   const addTask = (task) => {
     const newTask = {
@@ -41,18 +49,15 @@ function App() {
       status: 'todo',
       folderId: task.folderId || (selectedFolder ? selectedFolder.id : null)
     };
-    console.log("Nouvelle tâche ajoutée:", newTask);
     setTasks([...tasks, newTask]);
   };
 
   const updateTask = (id, updatedTask) => {
-    const updatedTasks = tasks.map(task => 
+    setTasks(tasks.map(task => 
       task.id === id 
         ? { ...task, ...updatedTask, folderId: updatedTask.folderId || task.folderId } 
         : task
-    );
-    console.log("Tâche mise à jour:", updatedTasks.find(t => t.id === id));
-    setTasks(updatedTasks);
+    ));
   };
 
   const deleteTask = (id) => {
@@ -118,11 +123,8 @@ function App() {
   };
 
   const filteredTasks = tasks.filter(task => {
-    console.log('Filtrage - Task:', task.title, 'FolderId:', task.folderId, 'Selected Folder:', selectedFolder?.id);
     if (selectedFolder) {
-      const isInFolder = task.folderId === selectedFolder.id;
-      console.log(`La tâche "${task.title}" est${isInFolder ? '' : ' non'} dans le dossier sélectionné`);
-      return isInFolder;
+      return task.folderId === selectedFolder.id;
     }
     if (filter === 'all') return true;
     return task.status === filter;
@@ -135,7 +137,6 @@ function App() {
 
   const handleFolderSelect = (folder) => {
     const newSelectedFolder = folder.id === selectedFolder?.id ? null : folder;
-    console.log("Dossier sélectionné:", newSelectedFolder);
     setSelectedFolder(newSelectedFolder);
   };
 
@@ -145,14 +146,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <HamburgerMenu
-        isOpen={isMenuOpen}
-        toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
-        setFilter={setFilter}
-        currentFilter={filter}
-      />
+      {/* Afficher le menu hamburger uniquement sur grand écran et tablette */}
+      {windowWidth >= 768 && (
+        <HamburgerMenu
+          isOpen={isMenuOpen}
+          toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
+          setFilter={setFilter}
+          currentFilter={filter}
+        />
+      )}
       <div className={`p-4 transition-all duration-300 ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
-        <h1 className="text-3xl font-bold text-center py-6 bg-white text-emerald-500 rounded-lg">Dolia</h1>
+        <h1 className="text-3xl font-bold text-center py-6 bg-emerald-500 text-white rounded-lg">Dolia app</h1>
         
         {/* Folder management */}
         <div className="mb-4 flex justify-between items-center">
@@ -244,6 +248,14 @@ function App() {
         onEditFolder={handleFolderFormSubmit}
         onDeleteFolder={deleteFolder}
       />
+
+      {/* Tab Menu pour mobile */}
+      {windowWidth < 768 && (
+        <TabMenu
+          onTabSelect={setFilter}
+          selectedTab={filter}
+        />
+      )}
     </div>
   );
 }
